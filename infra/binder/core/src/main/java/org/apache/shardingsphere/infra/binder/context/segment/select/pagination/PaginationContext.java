@@ -76,7 +76,7 @@ public final class PaginationContext {
         }
         return ((NumberLiteralPaginationValueSegment) paginationValueSegment).getValue();
     }
-
+    
     private Long getLongValue(final Object value) {
         if (value instanceof Number) {
             return ((Number) value).longValue();
@@ -86,7 +86,7 @@ public final class PaginationContext {
         }
         return Long.parseLong(value.toString());
     }
-
+    
     private Long getValueFromExpression(final ExpressionSegment expressionSegment, final List<Object> params) {
         if (expressionSegment instanceof BinaryOperationExpression) {
             return getValueFromBinaryOperationExpression((BinaryOperationExpression) expressionSegment, params);

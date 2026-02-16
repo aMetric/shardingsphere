@@ -364,7 +364,7 @@ class SelectStatementContextTest {
         assertFalse(paginationContext.getRowCountParameterIndex().isPresent());
         assertThat(paginationContext.getActualRowCount(), is(Optional.of(5L)));
     }
-
+    
     @Test
     void assertBindParametersPopulatePaginationContextWithByteArrayParameters() {
         SelectStatement selectStatement = new SelectStatement(databaseType);
