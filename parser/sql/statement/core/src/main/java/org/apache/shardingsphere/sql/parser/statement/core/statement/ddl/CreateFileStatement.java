@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.data.unsigned.impl;
+package org.apache.shardingsphere.sql.parser.statement.core.statement.ddl;
 
-import org.junit.jupiter.api.Test;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.database.connector.core.type.DatabaseType;
+import org.apache.shardingsphere.sql.parser.statement.core.segment.ddl.property.PropertiesSegment;
+import org.apache.shardingsphere.sql.parser.statement.core.statement.type.ddl.DDLStatement;
 
-import java.io.Serializable;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.isA;
-
-class MySQLBinlogUnsignedMediumintHandlerTest {
+/**
+ * Create file statement.
+ */
+@Getter
+@Setter
+public final class CreateFileStatement extends DDLStatement {
     
-    private final MySQLBinlogUnsignedMediumintHandler handler = new MySQLBinlogUnsignedMediumintHandler();
+    private String fileName;
     
-    @Test
-    void assertHandle() {
-        Serializable actual = handler.handle(1);
-        assertThat(actual, isA(Integer.class));
-        assertThat(actual, is(1));
-        actual = handler.handle(-1);
-        assertThat(actual, isA(Integer.class));
-        assertThat(actual, is(16777215));
+    private String databaseName;
+    
+    private PropertiesSegment properties;
+    
+    public CreateFileStatement(final DatabaseType databaseType) {
+        super(databaseType);
     }
 }

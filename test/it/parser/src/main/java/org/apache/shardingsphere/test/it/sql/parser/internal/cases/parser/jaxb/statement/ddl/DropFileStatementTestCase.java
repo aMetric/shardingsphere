@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.ingest.incremental.binlog.data.unsigned.impl;
+package org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.statement.ddl;
 
-import org.junit.jupiter.api.Test;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.SQLParserTestCase;
+import org.apache.shardingsphere.test.it.sql.parser.internal.cases.parser.jaxb.segment.impl.distsql.ExpectedProperties;
 
-import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.isA;
-
-class MySQLBinlogUnsignedMediumintHandlerTest {
+/**
+ * Drop file statement test case.
+ */
+@Getter
+@Setter
+public final class DropFileStatementTestCase extends SQLParserTestCase {
     
-    private final MySQLBinlogUnsignedMediumintHandler handler = new MySQLBinlogUnsignedMediumintHandler();
+    @XmlAttribute(name = "file-name")
+    private String fileName;
     
-    @Test
-    void assertHandle() {
-        Serializable actual = handler.handle(1);
-        assertThat(actual, isA(Integer.class));
-        assertThat(actual, is(1));
-        actual = handler.handle(-1);
-        assertThat(actual, isA(Integer.class));
-        assertThat(actual, is(16777215));
-    }
+    @XmlAttribute(name = "database-name")
+    private String databaseName;
+    
+    @XmlElement(name = "properties")
+    private ExpectedProperties properties;
 }
