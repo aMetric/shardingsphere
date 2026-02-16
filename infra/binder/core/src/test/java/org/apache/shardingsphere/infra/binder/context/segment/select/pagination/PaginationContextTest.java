@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.statement.core.segment.dml.paginatio
 import org.apache.shardingsphere.sql.parser.statement.core.statement.type.dml.SelectStatement;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -45,9 +46,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 class PaginationContextTest {
-    
+
     private final DatabaseType databaseType = TypedSPILoader.getService(DatabaseType.class, "FIXTURE");
-    
+
     @Test
     void assertSegmentWithNullOffsetSegment() {
         PaginationValueSegment rowCountSegment = getRowCountSegment();
@@ -56,7 +57,7 @@ class PaginationContextTest {
         assertNull(paginationContext.getOffsetSegment().orElse(null));
         assertThat(paginationContext.getRowCountSegment().orElse(null), is(rowCountSegment));
     }
-    
+
     @Test
     void assertGetSegmentWithRowCountSegment() {
         PaginationValueSegment offsetSegment = getOffsetSegment();
@@ -65,74 +66,88 @@ class PaginationContextTest {
         assertThat(paginationContext.getOffsetSegment().orElse(null), is(offsetSegment));
         assertNull(paginationContext.getRowCountSegment().orElse(null));
     }
-    
+
     @Test
     void assertGetActualOffset() {
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getActualOffset(), is(30L));
     }
-    
+
     @Test
     void assertGetActualOffsetWithNumberLiteralPaginationValueSegment() {
         assertThat(new PaginationContext(getOffsetSegmentWithNumberLiteralPaginationValueSegment(),
                 getRowCountSegmentWithNumberLiteralPaginationValueSegment(), getParameters()).getActualOffset(), is(30L));
     }
-    
+
+    @Test
+    void assertGetActualOffsetWithByteArrayParameters() {
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getByteArrayParameters()).getActualOffset(), is(30L));
+    }
+
     @Test
     void assertGetActualOffsetWithNullOffsetSegment() {
         assertThat(new PaginationContext(null, getRowCountSegment(), getParameters()).getActualOffset(), is(0L));
     }
-    
+
     @Test
     void assertGetActualRowCount() {
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getActualRowCount().orElse(null), is(20L));
     }
-    
+
     @Test
     void assertGetActualRowCountWithNumberLiteralPaginationValueSegment() {
         assertThat(new PaginationContext(getOffsetSegmentWithNumberLiteralPaginationValueSegment(),
                 getRowCountSegmentWithNumberLiteralPaginationValueSegment(), getParameters()).getActualRowCount().orElse(null), is(20L));
     }
-    
+
+    @Test
+    void assertGetActualRowCountWithByteArrayParameters() {
+        assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getByteArrayParameters()).getActualRowCount().orElse(null), is(20L));
+    }
+
     @Test
     void assertGetActualRowCountWithNullRowCountSegment() {
         assertNull(new PaginationContext(getOffsetSegment(), null, getParameters()).getActualRowCount().orElse(null));
     }
-    
+
     private PaginationValueSegment getOffsetSegmentWithNumberLiteralPaginationValueSegment() {
         return new NumberLiteralLimitValueSegment(28, 30, 30L);
     }
-    
+
     private PaginationValueSegment getRowCountSegmentWithNumberLiteralPaginationValueSegment() {
         return new NumberLiteralLimitValueSegment(32, 34, 20L);
     }
-    
+
     @Test
     void assertGetOffsetParameterIndex() {
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getOffsetParameterIndex().orElse(null), is(0));
     }
-    
+
     @Test
     void assertGetRowCountParameterIndex() {
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRowCountParameterIndex().orElse(null), is(1));
     }
-    
+
     private PaginationValueSegment getOffsetSegment() {
         return new ParameterMarkerLimitValueSegment(28, 30, 0);
     }
-    
+
     private PaginationValueSegment getRowCountSegment() {
         return new ParameterMarkerLimitValueSegment(32, 34, 1);
     }
-    
+
     private List<Object> getParameters() {
         return Arrays.asList(30, 20);
     }
-    
+
+    private List<Object> getByteArrayParameters() {
+        return Arrays.asList("30".getBytes(StandardCharsets.UTF_8), "20".getBytes(StandardCharsets.UTF_8));
+    }
+
     @Test
     void assertGetRevisedOffset() {
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedOffset(), is(0L));
     }
-    
+
     @Test
     void assertGetRevisedRowCount() {
         SelectStatement selectStatement = new SelectStatement(databaseType);
@@ -142,7 +157,7 @@ class PaginationContextTest {
         SelectStatementContext selectStatementContext = new SelectStatementContext(selectStatement, metaData, "foo_db", Collections.emptyList());
         assertThat(new PaginationContext(getOffsetSegment(), getRowCountSegment(), getParameters()).getRevisedRowCount(selectStatementContext), is(50L));
     }
-    
+
     @Test
     void assertGetRevisedRowCountWithMax() {
         SelectStatement selectStatement = new SelectStatement(databaseType);
